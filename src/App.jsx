@@ -1,9 +1,12 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import i18n from "./i18n";
+import { useTranslation } from "react-i18next";
 
 import close from "./assets/img/close.svg";
 import logo from "./assets/img/logo.svg";
 import british from "./assets/img/british.png";
+import ukrainian from "./assets/img/ukrainian.png";
 import arrowDown from "./assets/img/arrow-down.svg";
 import car from "./assets/img/car.png";
 import carReflection from "./assets/img/car-reflection.png";
@@ -11,9 +14,10 @@ import erik from "./assets/img/erik.png";
 import anna from "./assets/img/anna.png";
 import william from "./assets/img/william.png";
 import ODlogo from "./assets/img/ODlogotype.png";
+import up from "./assets/img/up.png";
 
 import "./App.css";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import PageLoader from "./components/PageLoader";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "react-router-dom";
@@ -27,6 +31,15 @@ function App() {
   const burgerBtn = document.querySelector(".header__burger");
   const burgerMenu = useRef(null)
   const burgerMenuCloseBtn = useRef(null)
+  const langListRef = useRef(null)
+  const langDisplayRef = useRef(null)
+  const langSwitchButtonRef = useRef(null)
+  const langFlagRef = useRef(null)
+
+  const [lang, setLang] = useState("EN")
+  const [popupStat, setPopupStat] = useState(false)
+
+  const {t, i18n} = useTranslation()
 
   const slider = useRef(null)
 
@@ -35,13 +48,26 @@ function App() {
       body.style.overflow = "hidden"
   }
   const handleCloseButtonClick = () => {
-      burgerMenu.current.style.right = "-100%";
+      burgerMenu.current.style.right = "-120%";
       body.style.overflow = "visible";
   };
   const handleBurgerButtonClick = () => {
-      burgerMenu.current.style.right = "-100%";
+      burgerMenu.current.style.right = "-120%";
       body.style.overflow = "visible";
   };
+
+  const handleLangSwitch = (lang) => {
+    setLang(lang)
+    i18n.changeLanguage(lang)
+    langFlagRef.current.src = lang === "EN" ? british : ukrainian
+    langListRef.current.style.display = "none"
+    langDisplayRef.current.value = lang
+  }
+
+  const handleLangDropdownClick = () => {
+    langListRef.current.style.display = popupStat ? "none" : "block"
+    setPopupStat(!popupStat)
+  }
 
   let carDealerX = -300;
   let carDealerY = 700;
@@ -184,7 +210,7 @@ function App() {
               onClick={handleBurgerButtonClick}
               to={"intro"}
             >
-              home
+              {t("nav-home")}
             </Link>
           </li>
           <li>
@@ -193,7 +219,7 @@ function App() {
               onClick={handleBurgerButtonClick}
               to={"dealer"}
             >
-              dealer
+              {t("nav-dealer")}
             </Link>
           </li>
           <li>
@@ -202,7 +228,7 @@ function App() {
               onClick={handleBurgerButtonClick}
               to={"revs"}
             >
-              reviews
+              {t("nav-reviews")}
             </Link>
           </li>
         </ul>
@@ -398,7 +424,7 @@ function App() {
             <a href="#" className="intro__progress-bar-sidebar-mobile-btn">
               <img
                 className="intro__progress-bar-sidebar-mobile-btn-img"
-                src="assets/img/up.png"
+                src={up}
                 alt="open"
               />
             </a>
@@ -436,7 +462,7 @@ function App() {
               <ul className="header__nav-list">
                 <li className="header__nav-list-item">
                   <a className="header__nav-list-link nav-home" href="#intro">
-                    home
+                    {t("nav-home")}
                   </a>
                 </li>
                 <li className="header__nav-list-item">
@@ -444,12 +470,12 @@ function App() {
                     className="header__nav-list-link nav-dealer"
                     href="#dealer"
                   >
-                    dealer
+                    {t("nav-dealer")}
                   </a>
                 </li>
                 <li className="header__nav-list-item">
                   <a className="header__nav-list-link nav-revs" href="#revs">
-                    reviews
+                    {t("nav-revs")}
                   </a>
                 </li>
               </ul>
@@ -459,19 +485,28 @@ function App() {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
                 className="header__lang-switch-link dropdown-toggle"
+                ref={langSwitchButtonRef}
                 href="#"
+                onClick={handleLangDropdownClick}
               >
-                <img className="header-lang-icon" src={british} alt="English" />
-                <p className="header__lang-switch-value">EN</p>
+                <img className="header-lang-icon" src={british} ref={langFlagRef} alt="English" />
+                <p className="header__lang-switch-value" ref={langDisplayRef}>
+                  {lang}
+                </p>
                 <img src={arrowDown} alt="see more" />
               </a>
               <div className="header__lang-options dropdown">
-                <ul className="header__lang-dropdown dropdown-menu">
+                <ul
+                  className="header__lang-dropdown dropdown-menu"
+                  ref={langListRef}
+                >
                   <li>
                     <a
                       className="header__lang-dropdown-item dropdown-item"
                       language="english"
                       href="#"
+                      ref={langDisplayRef}
+                      onClick={() => handleLangSwitch("EN")}
                     >
                       EN
                     </a>
@@ -481,6 +516,7 @@ function App() {
                       className="header__lang-dropdown-item dropdown-item"
                       language="ukrainian"
                       href="#"
+                      onClick={() => handleLangSwitch("UA")}
                     >
                       UA
                     </a>
@@ -511,7 +547,9 @@ function App() {
                     className="intro__car-reflection"
                   />
                 </div>
-                <p className="intro__subtitle intro-subtitle">feel the power</p>
+                <p className="intro__subtitle intro-subtitle">
+                  {t("intro-subtitle")}
+                </p>
                 <hr className="intro__hr" />
               </div>
             </div>
@@ -520,18 +558,12 @@ function App() {
             <div className="deal__container _container">
               <div className="deal__car-area"></div>
               <div className="deal__text-area">
-                <h2 className="deal__title deal-title">
-                  Best dealership in Ukraine
-                </h2>
+                <h2 className="deal__title deal-title">{t("deal-title")}</h2>
                 <p className="deal__subtitle deal-subtitle">
-                  Located in the heart of Ukraine's vibrant capital, Kiev, the
-                  Lamborghini dealership stands as a beacon of automotive
-                  excellence amidst the city's bustling streets. Nestled in a
-                  sleek, modern building that reflects Lamborghini's iconic
-                  design ethos
+                  {t("deal-subtitle")}
                 </p>
                 <a href="#" className="deal__btn btn deal-btn">
-                  Read more
+                  {t("deal-btn")}
                 </a>
               </div>
             </div>
@@ -539,18 +571,12 @@ function App() {
           <section id={"fast"} className="fast section">
             <div className="fast__container _container">
               <div className="fast__text-area">
-                <h2 className="fast__title fast-title">
-                  Lighthing fast and comfortable
-                </h2>
+                <h2 className="fast__title fast-title">{t("fast-title")}</h2>
                 <p className="fast__subtitle fast-subtitle">
-                  The concept of "Lamborghini Light Speed" evokes a thrilling
-                  vision at the cutting edge of automotive innovation. It's more
-                  than just speed; it represents a leap forward in technology
-                  and design, pushing the boundaries of what's possible in
-                  supercar performance.
+                  {t("fast-subtitle")}
                 </p>
                 <a href="#" className="fast__btn btn fast-btn">
-                  Read more
+                  {t("fast-btn")}
                 </a>
               </div>
               <div className="fast__img-area"></div>
@@ -559,25 +585,24 @@ function App() {
           <section className="races">
             <div className="races__wrapper">
               <div className="races__main" ref={slider}>
-                <h2 className="races-text1">Lamborghini</h2>
-                <h2 className="races-text2">Is</h2>
-                <h2 className="races-text3">The</h2>
-                <h2 className="races-text4">Coolest</h2>
-                <h2 className="races-text5">Car</h2>
-                <h2 className="races-text6">In</h2>
-                <h2 className="races-text7">The</h2>
-                <h2 className="races-text8">World</h2>
-                <h2 className="races-text9">No</h2>
-                <h2 className="races-text10">Debate</h2>
+                <h2 className="races-text1">{t("races-text1")}</h2>
+                <h2 className="races-text2">{t("races-text2")}</h2>
+                <h2 className="races-text3">{t("races-text3")}</h2>
+                <h2 className="races-text4">{t("races-text4")}</h2>
+                <h2 className="races-text5">{t("races-text5")}</h2>
+                <h2 className="races-text6">{t("races-text6")}</h2>
+                <h2 className="races-text7">{t("races-text7")}</h2>
+                <h2 className="races-text8">{t("races-text8")}</h2>
+                <h2 className="races-text9">{t("races-text9")}</h2>
+                <h2 className="races-text10">{t("races-text10")}</h2>
               </div>
             </div>
           </section>
           <section id={"revs"} className="revs">
             <div className="revs__container _container">
-              <h2 className="revs__title revs-title">Reviews</h2>
+              <h2 className="revs__title revs-title">{t("revs-title")}</h2>
               <p className="revs__subtitle revs-subtitle">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry
+                {t("revs-subtitle")}
               </p>
               {/* <div className="revs__items">
                 <div className="revs__item item-revs">
@@ -616,43 +641,31 @@ function App() {
                   <div className="item-revs-2__author-area">
                     <img src={anna} alt="Anna R." />
                     <div>
-                      <h5>Anna R.</h5>
-                      <p>Tech engineer</p>
+                      <h5>{t("anna-name")}</h5>
+                      <p>{t("anna-job")}</p>
                     </div>
                   </div>
-                  <p>
-                    As a long-time Lamborghini enthusiast, I couldn't wait to
-                    get behind the wheel of the Huracán, and it did not
-                    disappoint. The exterior design is aggressive yet elegant
-                  </p>
+                  <p>{t("anna-msg")}</p>
                 </div>
                 <div className="revs__item-2 item-revs-2">
                   <div className="item-revs-2__author-area">
                     <img src={erik} alt="Erik D." />
                     <div>
-                      <h5>Erik D.</h5>
-                      <p>Tech engineer</p>
+                      <h5>{t("erik-name")}</h5>
+                      <p>{t("erik-job")}</p>
                     </div>
                   </div>
-                  <p>
-                    As a long-time Lamborghini enthusiast, I couldn't wait to
-                    get behind the wheel of the Huracán, and it did not
-                    disappoint. The exterior design is aggressive yet elegant
-                  </p>
+                  <p>{t("erik-msg")}</p>
                 </div>
                 <div className="revs__item-2 item-revs-2">
                   <div className="item-revs-2__author-area">
                     <img src={william} alt="William K." />
                     <div>
-                      <h5>William K.</h5>
-                      <p>Tech engineer</p>
+                      <h5>{t("william-name")}</h5>
+                      <p>{t("william-job")}</p>
                     </div>
                   </div>
-                  <p>
-                    As a long-time Lamborghini enthusiast, I couldn't wait to
-                    get behind the wheel of the Huracán, and it did not
-                    disappoint. The exterior design is aggressive yet elegant
-                  </p>
+                  <p>{t("william-msg")}</p>
                 </div>
               </div>
             </div>
@@ -663,15 +676,15 @@ function App() {
             <div className="footer__main">
               <div className="footer__title-area">
                 <h2 className="footer__title">Lamborghini</h2>
-                <p className="footer-official">official dealer</p>
+                <p className="footer-official">{t("footer-official")}</p>
               </div>
               <div className="footer__list-area">
                 <div className="footer__list-area-main">
-                  <p className="footer-menu-title">Menu</p>
+                  <p className="footer-menu-title">{t("footer-menu-title")}</p>
                   <ul className="footer__list">
                     <li>
                       <a className="nav-home footer-nav-home" href="#intro">
-                        Home
+                        {t("footer-nav-home")}
                       </a>
                     </li>
                     <li>
@@ -679,12 +692,12 @@ function App() {
                         className="nav-dealer footer-nav-dealer"
                         href="#dealer"
                       >
-                        Dealership
+                        {t("footer-nav-dealer")}
                       </a>
                     </li>
                     <li>
                       <a className="nav-revs footer-nav-revs" href="#revs">
-                        Reviews
+                        {t("footer-nav-revs")}
                       </a>
                     </li>
                   </ul>
@@ -698,7 +711,7 @@ function App() {
               </div>
             </div>
             <p className="footer__copyright footer-copyright">
-              ©2024 All rights reserved
+              {t("footer-copyright")}
             </p>
           </div>
         </footer>
