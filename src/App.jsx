@@ -228,7 +228,7 @@ function App() {
               onClick={handleBurgerButtonClick}
               to={"revs"}
             >
-              {t("nav-reviews")}
+              {t("nav-revs")}
             </Link>
           </li>
         </ul>
