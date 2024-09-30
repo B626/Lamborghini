@@ -400,6 +400,7 @@ main {
   gap: 7px;
   text-decoration: none;
   color: #f1701d;
+  cursor: pointer;
 }
 @media (max-width: 375px) {
   .header__lang-switch-link {
@@ -427,6 +428,7 @@ main {
   text-decoration: none;
   padding-left: 5px;
   padding-right: 5px;
+  cursor: pointer;
 }
 .header__lang-dropdown-item:hover {
   background-color: #fd7c2c;

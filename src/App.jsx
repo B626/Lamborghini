@@ -17,11 +17,19 @@ import ODlogo from "./assets/img/ODlogotype.png";
 import up from "./assets/img/up.png";
 
 import "./App.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PageLoader from "./components/PageLoader";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Link } from "react-router-dom";
 // import Burger from "./components/Burger";
+
+import {
+  Link,
+  Button,
+  Element,
+  Events,
+  animateScroll as scroll,
+  scrollSpy,
+} from "react-scroll";
 
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -55,6 +63,30 @@ function App() {
       burgerMenu.current.style.right = "-120%";
       body.style.overflow = "visible";
   };
+
+    useEffect(() => {
+      // Registering the 'begin' event and logging it to the console when triggered.
+      Events.scrollEvent.register("begin", (to, element) => {
+        console.log("begin", to, element);
+      });
+
+      // Registering the 'end' event and logging it to the console when triggered.
+      Events.scrollEvent.register("end", (to, element) => {
+        console.log("end", to, element);
+      });
+
+      // Updating scrollSpy when the component mounts.
+      scrollSpy.update();
+
+      // Returning a cleanup function to remove the registered events when the component unmounts.
+      return () => {
+        Events.scrollEvent.remove("begin");
+        Events.scrollEvent.remove("end");
+      };
+    }, []);
+    // Function to handle the activation of a link.
+
+    const handleScrollDown = () => {};
 
   const handleLangSwitch = (lang) => {
     setLang(lang)
@@ -208,7 +240,10 @@ function App() {
             <Link
               className="burger-home burger-link"
               onClick={handleBurgerButtonClick}
-              to={"intro"}
+              to="home"
+              onSetActive={() => handleScrollDown()}
+              smooth={true}
+              duration={500}
             >
               {t("nav-home")}
             </Link>
@@ -217,7 +252,10 @@ function App() {
             <Link
               className="burger-dealer burger-link"
               onClick={handleBurgerButtonClick}
-              to={"dealer"}
+              to="dealer"
+              onSetActive={() => handleScrollDown()}
+              smooth={true}
+              duration={500}
             >
               {t("nav-dealer")}
             </Link>
@@ -226,7 +264,10 @@ function App() {
             <Link
               className="burger-revs burger-link"
               onClick={handleBurgerButtonClick}
-              to={"revs"}
+              to="revs"
+              onSetActive={() => handleScrollDown()}
+              smooth={true}
+              duration={500}
             >
               {t("nav-revs")}
             </Link>
@@ -429,25 +470,43 @@ function App() {
               />
             </a>
             <li className="intro__progress-bar-sidebar-item">
-              <a href="#intro" className="intro__progress-bar-sidebar-link">
+              <Link
+                to="home"
+                onSetActive={() => handleScrollDown()}
+                smooth={true}
+                duration={500}
+                className="intro__progress-bar-sidebar-link"
+              >
                 <p>01</p>
-              </a>
+              </Link>
             </li>
             <li className="intro__progress-bar-sidebar-item intro__progress-bar-sidebar-item_dec">
               <div></div>
             </li>
             <li className="intro__progress-bar-sidebar-item">
-              <a href="#dealer" className="intro__progress-bar-sidebar-link">
+              <Link
+                to="deal"
+                onSetActive={() => handleScrollDown()}
+                smooth={true}
+                duration={500}
+                className="intro__progress-bar-sidebar-link"
+              >
                 <p>02</p>
-              </a>
+              </Link>
             </li>
             <li className="intro__progress-bar-sidebar-item intro__progress-bar-sidebar-item_dec">
               <div></div>
             </li>
             <li className="intro__progress-bar-sidebar-item">
-              <a href="#fast" className="intro__progress-bar-sidebar-link">
+              <Link
+                to="revs"
+                onSetActive={() => handleScrollDown()}
+                smooth={true}
+                duration={500}
+                className="intro__progress-bar-sidebar-link"
+              >
                 <p>03</p>
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -461,65 +520,82 @@ function App() {
             <nav className="header__nav">
               <ul className="header__nav-list">
                 <li className="header__nav-list-item">
-                  <a className="header__nav-list-link nav-home" href="#intro">
+                  <Link
+                    className="header__nav-list-link nav-home"
+                    to="home"
+                    onSetActive={() => handleScrollDown()}
+                    smooth={true}
+                    duration={500}
+                  >
                     {t("nav-home")}
-                  </a>
+                  </Link>
                 </li>
                 <li className="header__nav-list-item">
-                  <a
+                  <Link
                     className="header__nav-list-link nav-dealer"
-                    href="#dealer"
+                    to="dealer"
+                    onSetActive={() => handleScrollDown()}
+                    smooth={true}
+                    duration={500}
                   >
                     {t("nav-dealer")}
-                  </a>
+                  </Link>
                 </li>
                 <li className="header__nav-list-item">
-                  <a className="header__nav-list-link nav-revs" href="#revs">
+                  <Link
+                    className="header__nav-list-link nav-revs"
+                    to="revs"
+                    onSetActive={() => handleScrollDown()}
+                    smooth={true}
+                    duration={500}
+                  >
                     {t("nav-revs")}
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </nav>
             <div className="header__lang-switch">
-              <a
+              <Link
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
                 className="header__lang-switch-link dropdown-toggle"
                 ref={langSwitchButtonRef}
-                href="#"
                 onClick={handleLangDropdownClick}
               >
-                <img className="header-lang-icon" src={british} ref={langFlagRef} alt="English" />
+                <img
+                  className="header-lang-icon"
+                  src={british}
+                  ref={langFlagRef}
+                  alt="English"
+                />
                 <p className="header__lang-switch-value" ref={langDisplayRef}>
                   {lang}
                 </p>
                 <img src={arrowDown} alt="see more" />
-              </a>
+              </Link>
               <div className="header__lang-options dropdown">
                 <ul
                   className="header__lang-dropdown dropdown-menu"
                   ref={langListRef}
                 >
                   <li>
-                    <a
+                    <Link
                       className="header__lang-dropdown-item dropdown-item"
                       language="english"
-                      href="#"
                       ref={langDisplayRef}
                       onClick={() => handleLangSwitch("EN")}
                     >
                       EN
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       className="header__lang-dropdown-item dropdown-item"
                       language="ukrainian"
-                      href="#"
                       onClick={() => handleLangSwitch("UA")}
                     >
                       UA
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -532,7 +608,7 @@ function App() {
           </div>
         </header>
         <main id="fullpage" className="main">
-          <section id={"intro"} className="intro section">
+          <section id={"intro"} className="intro section" name="home">
             <div className="intro__container _container">
               <div className="intro__main">
                 <div className="intro__main-text-area">
@@ -554,7 +630,7 @@ function App() {
               </div>
             </div>
           </section>
-          <section id={"dealer"} className="deal section">
+          <section id={"dealer"} name="dealer" className="deal section">
             <div className="deal__container _container">
               <div className="deal__car-area"></div>
               <div className="deal__text-area">
@@ -598,7 +674,7 @@ function App() {
               </div>
             </div>
           </section>
-          <section id={"revs"} className="revs">
+          <section id="revs" name="revs" className="revs">
             <div className="revs__container _container">
               <h2 className="revs__title revs-title">{t("revs-title")}</h2>
               <p className="revs__subtitle revs-subtitle">
@@ -683,22 +759,37 @@ function App() {
                   <p className="footer-menu-title">{t("footer-menu-title")}</p>
                   <ul className="footer__list">
                     <li>
-                      <a className="nav-home footer-nav-home" href="#intro">
+                      <Link
+                        className="nav-home footer-nav-home"
+                        to="home"
+                        onSetActive={() => handleScrollDown()}
+                        smooth={true}
+                        duration={500}
+                      >
                         {t("footer-nav-home")}
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
+                      <Link
                         className="nav-dealer footer-nav-dealer"
-                        href="#dealer"
+                        to="deal"
+                        onSetActive={() => handleScrollDown()}
+                        smooth={true}
+                        duration={500}
                       >
                         {t("footer-nav-dealer")}
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a className="nav-revs footer-nav-revs" href="#revs">
+                      <Link
+                        className="nav-revs footer-nav-revs"
+                        to="revs"
+                        onSetActive={() => handleScrollDown()}
+                        smooth={true}
+                        duration={500}
+                      >
                         {t("footer-nav-revs")}
-                      </a>
+                      </Link>
                     </li>
                   </ul>
                 </div>
